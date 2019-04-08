@@ -1,0 +1,430 @@
+%==============================================================================
+% TEMPLATE FOR THESIS WAGENINGEN UNIVERSITY
+% CREATED BY AREND LIGTENBERG JUNE 2006;
+% EDITED BY KIM CALDERS 2014;
+% EDITED BY BEN DEVRIES 2015;
+% EDITED BY LOIC DUTRIEUX 2016;
+% EDITED BY BENJAMIN BREDE 2019;
+%==============================================================================
+
+\documentclass [a4paper,12pt,twoside]{book}
+\usepackage[utf8]{inputenc}
+\usepackage[dutch,english]{babel}
+\usepackage{graphicx}
+%\usepackage{natbib} % replaced by biblatex
+\usepackage{amsmath}
+\usepackage{fancyhdr}
+\usepackage[small,bf]{caption}
+%\captionsetup[table]{skip=10pt}
+\usepackage{multirow}
+%\usepackage[body={6.0in, 8.2in},left=1.50in,right=1.50in]{geometry} %% very narrow
+\usepackage[top=3.35cm, bottom=3.35cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage[parfill]{parskip}
+%\usepackage{enumitem} % replaced by enumitem
+%\usepackage[rightcaption]{sidecap}
+%\usepackage{epstopdf}
+\usepackage{pdfpages}
+%\usepackage[hidelinks]{hyperref} % see later
+\usepackage{color}
+\usepackage{appendix}
+
+% extra packages added by Ben
+\usepackage{rotating} % for rotating figures
+\usepackage{changepage} % for indenting entire paragraphs
+\usepackage{float} % help with table positioning
+\floatstyle{plaintop} % caption on top
+\restylefloat{table} % see above. Use: \begin{table}[H]
+%\usepackage{textcomp} % \textdegree
+%\usepackage{fixltx2e} % for the \textsubscript command outside of a math environment
+\usepackage{csquotes} % for block quotes, use {displayquote} environment
+\usepackage{todonotes}
+%\usepackage{soul}
+\usepackage{fp}
+\usepackage{tabularx}
+%\usepackage{subcaption}
+\usepackage{pdflscape}
+%\usepackage{gensymb}
+%\usepackage{mhchem}
+%\usepackage{wrapfig}
+
+% extra packages added by Ben B
+\usepackage{booktabs} 
+\usepackage{microtype} % fancy typesetting
+\usepackage[plain]{fancyref} % fancy cross-references
+\usepackage{enumitem} % flexible numeration/list environments
+\usepackage{pageslts} % to get total number of pages for frontmatter
+\usepackage{etoolbox} % to fix acronym macro
+
+% make \url{} command available in text, break urls at hyphens (important for bibliography)
+\PassOptionsToPackage{hyphens}{url}
+\usepackage[bookmarksdepth=2,colorlinks=false,hidelinks]{hyperref}
+\usepackage{url}
+
+% bibliography with biblatex
+\usepackage[
+	backend=biber,
+	natbib, % allow natbib cite commands
+	alldates=year,
+	style=authoryear,
+	sorting=nyt, % sorting order of the bibs: name, year, title
+	sortcites, % sort in cite, when multiple refs are cited
+	giveninits, % abbreveate first names
+	maxbibnames=100, % max names per biobliography entry
+	minbibnames=13,
+	maxcitenames=2, % max names per citation
+	uniquelist=false, % force inline citations to have no first names or additional co-authors
+	uniquename=false, % force inline citations to have no first names or additional co-authors
+	hyperref=false,
+	doi,
+	isbn=false
+]{biblatex}
+
+% add bib databases and give them unique labels to later refer to them
+% paths can be absolute
+% published papers of the PhD should be in both refs (or refsAdditional) and mypubs
+\addbibresource[label=refs]{refs.bib}
+\addbibresource[label=refsAdditional]{moreRefs.bib}
+% use author+an field in ownPublications.bib to specify which author should be highlighted
+\addbibresource[label=mypubs]{ownPublications.bib}
+
+% biblatex + Mendeley: ignore some fields produced by Mendeley that are not biblatex conform (or not necessary)
+\DeclareSourcemap{
+	\maps[datatype=bibtex, overwrite]{
+		\map{
+			\perdatasource{refs}
+			\step[fieldset=ISBN, null]
+			\step[fieldset=month, null]
+			\step[fieldset=abstract, null]
+			\step[fieldset=file, null]
+			\step[fieldset=keywords, null]
+			\step[fieldset={mendeley-tags}, null]
+			\step[fieldset=number, null]
+		}
+		\map{
+			\perdatasource{refsAdditional}
+			\step[fieldset=ISBN, null]
+			\step[fieldset=month, null]
+			\step[fieldset=abstract, null]
+			\step[fieldset=file, null]
+			\step[fieldset=keywords, null]
+			\step[fieldset={mendeley-tags}, null]
+			\step[fieldset=number, null]
+		}
+		\map{
+			\pernottype{manual}
+			\step[fieldset=url, null] % remove urls from all but manual > DOI has same information content
+		}
+	}
+}
+
+% add space between bibliography items
+\setlength\bibitemsep{0.25\baselineskip}
+
+% use all authors for fullcite
+\preto\fullcite{\AtNextCite{\defcounter{maxnames}{99}}} 
+%https://tex.stackexchange.com/questions/126226/how-do-i-instruct-fullcite-to-use-maxbibnames-rather-than-maxcitenames
+
+% for biblatex + own publication list: make author name bold if annotated (bibtex field author+an in mypubs.bib)
+\renewcommand*{\mkbibnamegiven}[1]{%
+	\ifitemannotation{highlight}
+	{\textbf{#1}}
+	{#1}
+}
+\renewcommand*{\mkbibnamefamily}[1]{%
+	\ifitemannotation{highlight}
+	{\textbf{#1}}
+	{#1}
+}
+
+% in bibliography: remove "in:" before journal names for articles
+\renewbibmacro{in:}{%
+	\ifentrytype{article}{}{\printtext{\bibstring{in}\intitlepunct}}
+}
+
+% in bibliography: removes pagination (p./pp.) before page numbers
+\DeclareFieldFormat{pages}{#1}
+
+
+% typeset units correctly
+\usepackage[binary-units=true]{siunitx} 
+\sisetup{range-units=single}
+\DeclareSIUnit \lai{ \square\metre\per\square\metre }
+
+\usepackage[labelformat=simple]{subcaption}
+\renewcommand\thesubfigure{\alph{subfigure}}
+\DeclareCaptionLabelFormat{subcaptionlabel}{\normalfont(\textbf{#2}\normalfont)}
+\captionsetup[subfigure]{labelformat=subcaptionlabel}
+
+% full acronyms once, then abbreviations
+\usepackage{acronym} 
+\include{Acronyms}
+
+
+%\addto\captionsenglish{\renewcommand{\bibname}{References}} % REFERENCES > References
+
+\widowpenalty10000
+\clubpenalty10000
+
+% allow up to 80% of page to be float (figure/table) and still print text
+\renewcommand{\floatpagefraction}{.8}
+
+\definecolor{Red}{rgb}{0.5,0,0}
+\definecolor{Blue}{rgb}{0,0,0.5}
+
+
+%=======================================================================
+% GENERAL SETTINGS
+%=======================================================================
+%\oddsidemargin 40pt
+%\evensidemargin 40pt
+\setlength{\captionmargin}{5pt}
+%\setlength{\textfloatsep}{10pt plus 1.0pt minus 2.0pt}
+%\usepackage{pifont}
+%\usepackage{times}
+%\usepackage{txfonts}
+%\usepackage[sc]{mathpazo}
+%\usepackage{setspace}
+
+\linespread{1.1} %1 is single spacing, 1.3 is oneandhalf spacing
+
+
+%\citationstyle{dcu}
+\sloppy
+\setcounter{tocdepth}{0}
+
+%% for internal use
+\newcommand{\fixme}[1]{\emph{\marginpar{FIXME} (#1)}}
+\newcommand{\readme}[1]{\emph{\marginpar{README} (#1)}}
+\newcommand{\verifyme}[1]{\emph{\marginpar{VERIFYME} (#1)}}
+
+
+%=======================================================================
+% DEFINITION OF THE FANCY HEADERS
+%=======================================================================
+\pagestyle{fancy}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+\fancyhf{}
+\fancyhead[LE,RO]{\bfseries\thepage}
+\fancyhead[LO]{\bfseries\nouppercase{\rightmark}}
+\fancyhead[RE]{\bfseries\nouppercase{\leftmark}}
+%\fancyfoot[LE,CE,RE]{\scriptsize{Draft: June 2006}}
+%\fancyfoot[LO,CO,RO]{\scriptsize{Draft: June 2006}}
+\headheight 15pt
+
+\fancypagestyle{plain}{%
+	\fancyhead{} % get rid of headers
+	\renewcommand{\headrulewidth}{0pt} % and the line
+}
+\renewcommand{\headrulewidth}{0.4pt}
+%\renewcommand{\footrulewidth}{0.4pt}
+
+\pdfinfo{
+   /Author (John Doe)
+   /Title  (Title of your thesis)
+   /CreationDate (D:Date)
+}
+
+%=======================================================================
+% NEW ENVIRONMENT FOR THE START OF CHAPTER (SMALL ABSTRACT)
+%=======================================================================
+%\newenvironment{chapintro}
+%{
+%    \begin{center}
+%    \begin{minipage}[t]{0.9\textwidth}
+%    \hrule
+%    \medskip
+%    \small
+%}
+%{
+%    \medskip
+%    \hrule
+%    \end{minipage}
+%    \end{center}
+%    \bigskip
+%}
+
+
+%=======================================================================
+% ADD WORD CHAPTER FOR TOC
+%=======================================================================
+
+
+\makeatletter
+\let\orig@chapter\@chapter
+\def\@chapter[#1]#2{\ifnum \c@secnumdepth >\m@ne
+                       \if@mainmatter
+                         \refstepcounter{chapter}%
+                         \typeout{\@chapapp\space\thechapter.}%
+                         \addcontentsline{toc}{chapter}%
+                                   {Chapter~\protect\numberline{\thechapter}#1}%
+                       \else
+                         \addcontentsline{toc}{chapter}{#1}%
+                       \fi
+                    \else
+                      \addcontentsline{toc}{chapter}{#1}%
+                    \fi
+                    \chaptermark{#1}%
+                    \addtocontents{lof}{\protect\addvspace{10\p@}}%
+                    \addtocontents{lot}{\protect\addvspace{10\p@}}%
+                    \if@twocolumn
+                      \@topnewpage[\@makechapterhead{#2}]%
+                    \else
+                      \@makechapterhead{#2}%
+                      \@afterheading
+                    \fi}
+% allow hyphenation of acronyms                
+\patchcmd\AC@acs{\mbox}{\@firstofone}{}{} 
+
+\makeatother
+
+%=======================================================================
+% A BIT MORE COMPACT ITEM LIST
+%=======================================================================
+%\newenvironment{itemize*}%
+%  {\begin{itemize}%
+%    \setlength{\parskip}{0pt}%
+%    \setlength{\itemsep}{0pt}%
+%    \setlength{\parsep}{0pt}}%
+%  {\end{itemize}}
+%
+%%more compact enumeration list
+%  \newenvironment{enumerate*}%
+%  {\begin{enumerate}%
+%    \setlength{\itemsep}{0pt}%
+%    \setlength{\parskip}{0pt}}%
+%  {\end{enumerate}}
+
+%=======================================================================
+% A BIT MORE COMPACT DESCRIPTION LIST
+%=======================================================================
+%\renewcommand{\descriptionlabel}[1]{\hspace{\labelsep}\textrm{#1}}
+%
+%\newenvironment{description*}%
+%  {\begin{description}%
+%    \setlength{\itemsep}{0pt}%
+%    \setlength{\parskip}{0pt}}%
+%  {\end{description}}
+
+
+%=======================================================================
+% CLEAR HEADER STYLE ON LAST EMPTY ODD PAGES
+%=======================================================================
+\makeatletter
+\def\cleardoublepage{\clearpage\if@twoside \ifodd\c@page\else%
+\hbox{}%
+\thispagestyle{empty}%
+\newpage%
+\if@twocolumn\hbox{}\newpage\fi\fi\fi}
+\makeatother
+
+
+%=======================================================================
+% SOME EXTRA COMMANDS FOR VISUAL LAYOUT
+%=======================================================================
+\newcommand{\longpage}{\enlargethispage{\baselineskip}}
+\newcommand{\shortpage}{\enlargethispage{-\baselineskip}}
+\newcommand{\setreference}{\vspace*{\fill}}
+
+
+%==============================
+% REFORMAT SECTION HEADINGS
+%==============================
+
+%% using titlesec
+\usepackage{titlesec}
+%% FIX FOR BUG in titlesec 2.10.1
+\usepackage{etoolbox}
+
+\makeatletter
+\patchcmd{\ttlh@hang}{\parindent\z@}{\parindent\z@\leavevmode}{}{}
+\patchcmd{\ttlh@hang}{\noindent}{}{}{}
+\makeatother
+%% END OF BUGFIX
+
+\titleformat{\subsection}
+  {\normalfont\normalsize\bfseries}
+  {\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\itshape}
+  {\thesubsubsection}{1em}{}
+
+
+
+%==============================
+% Force start of newpage on left page
+%==============================
+\newcommand*\cleartoleftpage{%
+  \clearpage
+  \ifodd\value{page}\hbox{}\newpage\fi
+}
+
+
+
+%=======================================================================
+% INCLUSION OF THE CONTENT
+%=======================================================================
+
+\raggedbottom % preferentially leaves whitespace at bottom of page instead of distributing throughout vertical space
+
+\begin{document}
+
+\frontmatter
+%\pagenumbering{alph}
+\pagenumbering{roman}
+\addtocontents{toc}{~\hfill\rlap{\textbf{Page}}\par}
+\include{000_Title}
+
+% start refsection: use these specific bib-resources
+\begin{refsection}[refs,refsAdditional]
+	
+	\cleardoublepage
+	\phantomsection
+	\addcontentsline{toc}{chapter}{Contents}  
+	\tableofcontents
+	
+	\cleardoublepage
+	%\pagenumbering{arabic} \setcounter{page}{1}
+	
+	%% Main Chapters
+	\mainmatter
+	\setcounter{page}{1}
+	\include{01_intro} % Introduction 
+	\include{02_chapter2}
+	\include{03_chapter3}
+	\include{04_chapter4}
+	\include{05_chapter5}
+	\include{06_synthesis} % Synthesis
+		
+	\backmatter
+	\phantomsection
+	\printbibliography[heading=bibintoc, title={References}]
+	
+\end{refsection}
+
+
+\cleardoublepage
+\phantomsection
+\include{002_Summary}
+
+\cleardoublepage
+\phantomsection
+\include{001_Acknowledgements}
+
+\cleardoublepage
+\phantomsection
+% start refsection: use only mypubs
+\begin{refsection}[mypubs]
+\include{07_biography}
+\end{refsection}
+
+\cleardoublepage
+\phantomsection
+\include{08_TESF}
+
+\fancyhead{}
+\renewcommand{\headrulewidth}{0pt}
+\cleartoleftpage
+
+\include{09_funding}
+\end{document}
